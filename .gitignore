@@ -1,0 +1,82 @@
+# ============================================
+# Python Gitignore (profesional)
+# ============================================
+
+# Archivos de bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Entornos virtuales
+venv/
+env/
+.venv/
+ENV/
+env.bak/
+.venv.bak/
+
+# Archivos de configuración de entorno
+*.env
+*.env.local
+*.env.*.local
+
+# Archivos de dependencias de herramientas
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Compilaciones / paquetes
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Testing
+.pytest_cache/
+.coverage
+.tox/
+.nox/
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+*.hypothesis/
+
+# Logs
+*.log
+logs/
+*.out
+*.err
+
+# IDEs y editores
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+
+# Jupyter Notebooks
+.ipynb_checkpoints
+
+# Otros
+.mypy_cache/
+.pyre/
+.dmypy.json
+.pytype/
+cython_debug/
