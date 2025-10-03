@@ -104,3 +104,17 @@ Pagos parciales o totales de una factura.\
     -   pertenece a 1 **Factura**
 
 ------------------------------------------------------------------------
+
+**Crear migraciones iniciales con Alembic** ✅  
+   - Se configuró Alembic con SQLite.  
+   - Se ejecutó la primera migración que creó las tablas:  
+     - `empresas`, `usuarios`, `clientes`, `facturas`, `abonos`.  
+   - Verificado en SQLite con:  
+     ```bash
+     sqlite3 app.db
+     .tables
+     ```
+     Resultado esperado:  
+     ```
+     abonos  clientes  facturas  empresas  usuarios  alembic_version
+     ```
