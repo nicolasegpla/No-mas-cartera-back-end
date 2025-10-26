@@ -5,6 +5,7 @@ class FacturaCreate(BaseModel):
     cliente_id: int
     monto_total: float
     fecha_vencimiento: date
+    numero_factura: str
 
 class FacturaResponse(BaseModel):
     id: int
@@ -12,6 +13,7 @@ class FacturaResponse(BaseModel):
     monto_total: float
     fecha_emision: datetime
     fecha_vencimiento: date
+    numero_factura: str
     estado: str
 
     class Config:
@@ -26,6 +28,7 @@ class FacturaDetalleResponse(BaseModel):
     estado: str
     fecha_emision: datetime
     fecha_vencimiento: date
+    numero_factura: str
 
     class Config:
         from_attributes = True
@@ -39,6 +42,7 @@ class FacturaListadoResponse(BaseModel):
     estado: str
     fecha_emision: datetime
     fecha_vencimiento: date
+    numero_factura: str
 
     class Config:
         from_attributes = True

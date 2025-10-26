@@ -15,7 +15,7 @@ class Cliente(Base):
     identificacion_tributaria = Column(String(100), unique=True, nullable=False)
     deuda_total = Column(Integer, default=0)  # Deuda en centavos para evitar problemas con float
     abonado_total = Column(Integer, default=0)  # Total abonado en centavos
-    estado_cartera = Column(Boolean, default=False)  # True si la factura está activa, False si está cancelada
+    estado_cartera = Column(Boolean, default=False)  # True si tiene facturas vencidas, False si está al dia o sin facturas vencidas
     
     # Relación con empresa
     empresa = relationship("Empresa", back_populates="clientes")

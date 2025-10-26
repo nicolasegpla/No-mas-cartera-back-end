@@ -1,8 +1,8 @@
-"""create initial tables
+"""initial migration
 
-Revision ID: a908b41b1824
+Revision ID: 7248e4223590
 Revises: 
-Create Date: 2025-10-03 11:53:29.663548
+Create Date: 2025-10-25 11:52:50.222263
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'a908b41b1824'
+revision: str = '7248e4223590'
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -69,9 +69,11 @@ def upgrade() -> None:
     sa.Column('monto_total', sa.Float(), nullable=False),
     sa.Column('fecha_emision', sa.DateTime(timezone=True), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
     sa.Column('fecha_vencimiento', sa.DateTime(timezone=True), nullable=False),
+    sa.Column('numero_factura', sa.String(length=100), nullable=False),
     sa.Column('estado', sa.String(length=50), nullable=True),
     sa.ForeignKeyConstraint(['cliente_id'], ['clientes.id'], ondelete='CASCADE'),
-    sa.PrimaryKeyConstraint('id')
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('numero_factura')
     )
     op.create_index(op.f('ix_facturas_id'), 'facturas', ['id'], unique=False)
     op.create_table('abonos',

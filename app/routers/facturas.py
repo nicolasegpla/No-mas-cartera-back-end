@@ -12,12 +12,12 @@ router = APIRouter()
 def create_factura(factura: FacturaCreate, db: Session = Depends(get_db)):
     return crear_factura(db, factura)
 
-@router.get("/{factura_id}", response_model=FacturaResponse)
-def read_factura(factura_id: int, db: Session = Depends(get_db)):
-    factura = obtener_factura(db, factura_id)
-    if not factura:
-        raise HTTPException(status_code=404, detail="Factura no encontrada")
-    return factura
+#@router.get("/{factura_id}", response_model=FacturaResponse)
+#def read_factura(factura_id: int, db: Session = Depends(get_db)):
+#    factura = obtener_factura(db, factura_id)
+#    if not factura:
+#        raise HTTPException(status_code=404, detail="Factura no encontrada")
+#    return factura
 
 @router.get("/{factura_id}/detalle", response_model=FacturaDetalleResponse)
 def read_factura_detalle(factura_id: int, db: Session = Depends(get_db)):
