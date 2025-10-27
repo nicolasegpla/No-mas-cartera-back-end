@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import Request
-from app.routers import clientes, facturas, abonos
+from app.routers import clientes, facturas, abonos, auth_empresa
 
 app = FastAPI()
 
@@ -24,3 +24,4 @@ async def test(request: Request):
 app.include_router(clientes.router, prefix="/clientes", tags=["Clientes"])
 app.include_router(facturas.router, prefix="/facturas", tags=["Facturas"])
 app.include_router(abonos.router, prefix="/abonos", tags=["Abonos"])
+app.include_router(auth_empresa.router, prefix="/auth", tags=["Autenticación Empresa"])

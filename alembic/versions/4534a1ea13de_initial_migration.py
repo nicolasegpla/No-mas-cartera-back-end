@@ -1,8 +1,8 @@
 """initial migration
 
-Revision ID: 7248e4223590
+Revision ID: 4534a1ea13de
 Revises: 
-Create Date: 2025-10-25 11:52:50.222263
+Create Date: 2025-10-27 14:49:14.625361
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '7248e4223590'
+revision: str = '4534a1ea13de'
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -26,7 +26,20 @@ def upgrade() -> None:
     sa.Column('nombre', sa.String(length=255), nullable=False),
     sa.Column('identificacion_tributaria', sa.String(length=100), nullable=False),
     sa.Column('email_contacto', sa.String(length=255), nullable=True),
+    sa.Column('hashed_password', sa.String(length=255), nullable=False),
+    sa.Column('telefono_contacto', sa.String(length=50), nullable=True),
+    sa.Column('direccion', sa.String(length=255), nullable=True),
+    sa.Column('pais', sa.String(length=100), nullable=True),
+    sa.Column('ciudad', sa.String(length=100), nullable=True),
     sa.Column('fecha_registro', sa.DateTime(timezone=True), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
+    sa.Column('whatsapp_phone_number_id', sa.String(length=100), nullable=True),
+    sa.Column('whatsapp_business_id', sa.String(length=100), nullable=True),
+    sa.Column('whatsapp_access_token', sa.String(length=500), nullable=True),
+    sa.Column('whatsapp_habilitado', sa.Boolean(), nullable=True),
+    sa.Column('whatsapp_conectado_en', sa.DateTime(timezone=True), nullable=True),
+    sa.Column('activa', sa.Boolean(), nullable=True),
+    sa.Column('creada_en', sa.DateTime(timezone=True), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
+    sa.Column('actualizada_en', sa.DateTime(timezone=True), nullable=True),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('email_contacto'),
     sa.UniqueConstraint('identificacion_tributaria')
