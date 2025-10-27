@@ -6,13 +6,25 @@ from fastapi import HTTPException
 from app.models.cliente import Cliente
 from app.schemas.cliente import ClienteCreate
 from sqlalchemy import exists, and_
+from app.models.empresa import Empresa
 
-def crear_cliente(db: Session, cliente_data: ClienteCreate) -> Cliente:
-    cliente = Cliente(**cliente_data.dict())
+#def crear_cliente(db: Session, cliente_data: ClienteCreate, empresa: Empresa) -> Cliente:
+#    cliente = Cliente(**cliente_data.dict())
+#    db.add(cliente)
+#    db.commit()
+#    db.refresh(cliente)
+#    return cliente
+
+def crear_cliente(db: Session, cliente_data: ClienteCreate, empresa: Empresa) -> Cliente:
+    cliente = Cliente(
+        **cliente_data.dict(),
+        empresa_id=empresa.id  # 👈 Aquí se agrega automáticamente
+    )
     db.add(cliente)
     db.commit()
     db.refresh(cliente)
     return cliente
+
 
 def obtener_cliente_con_saldos(db: Session, cliente_id: int):
     cliente = db.query(Cliente).filter(Cliente.id == cliente_id).first()
@@ -50,19 +62,19 @@ def obtener_cliente_con_saldos(db: Session, cliente_id: int):
         print(f"id={f.id}, estado={f.estado}")
 
 
-
-    return {
-        "id": cliente.id,
-        "empresa_id": cliente.empresa_id,
-        "nombre": cliente.nombre,
-        "email": cliente.email,
-        "telefono": cliente.telefono,
-        "identificacion_tributaria": cliente.identificacion_tributaria,
-        "deuda_total": total_facturas - total_abonos,
-        "abonado_total": total_abonos,
-        "estado_cartera": estado_cartera,
-        "fecha_registro": cliente.fecha_registro
-    }
+    return cliente
+    #return {
+    #    "id": cliente.id,
+    #    "empresa_id": cliente.empresa_id,
+    #    "nombre": cliente.nombre,
+    #    "email": cliente.email,
+    #    "telefono": cliente.telefono,
+    #    "identificacion_tributaria": cliente.identificacion_tributaria,
+    #    "deuda_total": total_facturas - total_abonos,
+    #    "abonado_total": total_abonos,
+    #    "estado_cartera": estado_cartera,
+    #    "fecha_registro": cliente.fecha_registro
+    #}
 
 def obtener_clientes(db: Session, empresa_id: int) -> list[dict]:
     clientes = db.query(Cliente).filter(Cliente.empresa_id == empresa_id).all()
@@ -82,7 +94,5 @@ def obtener_clientes(db: Session, empresa_id: int) -> list[dict]:
             "estado_cartera": c.estado_cartera,
             "fecha_registro": c.fecha_registro
         })
-
-    db.commit()
 
     return resultado

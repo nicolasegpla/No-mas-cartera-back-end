@@ -4,7 +4,6 @@ from datetime import datetime
 
 # Esquema para crear un cliente
 class ClienteCreate(BaseModel):
-    empresa_id: int
     nombre: str
     email: EmailStr
     telefono: Optional[str] = None

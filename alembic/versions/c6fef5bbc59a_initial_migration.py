@@ -1,8 +1,8 @@
 """initial migration
 
-Revision ID: 4534a1ea13de
+Revision ID: c6fef5bbc59a
 Revises: 
-Create Date: 2025-10-27 14:49:14.625361
+Create Date: 2025-10-27 16:54:38.296159
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '4534a1ea13de'
+revision: str = 'c6fef5bbc59a'
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -58,7 +58,7 @@ def upgrade() -> None:
     sa.Column('estado_cartera', sa.Boolean(), nullable=True),
     sa.ForeignKeyConstraint(['empresa_id'], ['empresas.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('identificacion_tributaria')
+    sa.UniqueConstraint('empresa_id', 'identificacion_tributaria', name='unique_cliente_por_empresa')
     )
     op.create_index(op.f('ix_clientes_email'), 'clientes', ['email'], unique=False)
     op.create_index(op.f('ix_clientes_id'), 'clientes', ['id'], unique=False)
