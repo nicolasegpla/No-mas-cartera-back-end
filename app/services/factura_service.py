@@ -1,3 +1,4 @@
+from fastapi import HTTPException, status
 from typing import List
 from datetime import datetime
 from sqlalchemy.orm import Session
@@ -5,8 +6,37 @@ from sqlalchemy import func
 from app.models.abono import Abono
 from app.models.factura import Factura
 from app.schemas.factura import FacturaCreate
+from app.models.cliente import Cliente
+from app.models.empresa import Empresa
 
-def crear_factura(db: Session, factura_data: FacturaCreate) -> Factura:
+def crear_factura(db: Session, factura_data: FacturaCreate, empresa_id: int) -> Factura:
+
+    existe_factura = db.query(Factura).join(Cliente).filter(
+        Factura.numero_factura == factura_data.numero_factura,
+        Cliente.empresa_id == empresa_id
+    ).first()
+
+
+    if existe_factura:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Ya existe una factura con número {factura_data.numero_factura} en esta empresa"
+        )
+
+
+    factura_id_clinete = factura_data.cliente_id
+    print("factura id clinete", factura_id_clinete)
+    print("empresa id", empresa_id)
+
+    cliente = db.query(Cliente).filter(Cliente.id == factura_id_clinete).first()
+
+
+    if cliente.empresa_id != empresa_id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="El cliente no pertenece a la empresa actual."
+        )
+
     factura = Factura(
         cliente_id=factura_data.cliente_id,
         monto_total=factura_data.monto_total,
@@ -24,6 +54,7 @@ def obtener_factura(db: Session, factura_id: int) -> Factura:
 
 def obtener_factura_detalle(db: Session, factura_id: int):
     factura = db.query(Factura).filter(Factura.id == factura_id).first()
+    cliente = db.query(Cliente).filter(Cliente.id == factura.cliente_id).first()
     if not factura:
         return None
     
@@ -51,11 +82,19 @@ def obtener_factura_detalle(db: Session, factura_id: int):
         "fecha_emision": factura.fecha_emision,
         "fecha_vencimiento": factura.fecha_vencimiento,
         "numero_factura": factura.numero_factura,
+        "empresa_id": cliente.empresa_id
     }
 
-def obtener_facturas_por_cliente(db: Session, cliente_id: int) -> List[dict]:
+def obtener_facturas_por_cliente(db: Session, cliente_id: int, empresa: Empresa) -> List[dict]:
+    cliente = db.query(Cliente).filter(Cliente.id == cliente_id).first()
     facturas = db.query(Factura).filter(Factura.cliente_id == cliente_id).all()
     resultado = []
+
+    if cliente.empresa_id != empresa.id:
+        raise HTTPException(
+            status_code=403,
+            detail="El cliente no existe o no pertenece a tu empresa"
+        )
 
     for f in facturas:
         total_abonado = (
@@ -91,5 +130,41 @@ def obtener_facturas_por_cliente(db: Session, cliente_id: int) -> List[dict]:
         })
     
     db.commit()
+
+    return resultado
+
+def obtener_todas_las_facturas(db: Session, empresa: Empresa) -> List[dict]:
+    facturas = (
+        db.query(Factura)
+        .join(Cliente, Cliente.id == Factura.cliente_id)
+        .filter(Cliente.empresa_id == empresa.id)
+        .all()
+    )
+
+    if not facturas:
+        raise HTTPException(status_code=404, detail="No se encontraron facturas para esta empresa")
+
+    resultado = []
+
+    for facturas in facturas:
+        resultado.append({
+            "id": facturas.id,
+            "cliente_id": facturas.cliente_id,
+            "monto_total": facturas.monto_total,
+            "estado": facturas.estado,
+            "fecha_emision": facturas.fecha_emision,
+            "fecha_vencimiento": facturas.fecha_vencimiento,
+            "numero_factura": facturas.numero_factura,
+            "total_abonado": str(
+                db.query(func.coalesce(func.sum(Abono.monto_abono), 0))
+                .filter(Abono.factura_id == facturas.id)
+                .scalar()
+            ),
+            "saldo_pendiente": str(
+                facturas.monto_total - db.query(func.coalesce(func.sum(Abono.monto_abono), 0))
+                .filter(Abono.factura_id == facturas.id)
+                .scalar()
+            )
+        })
 
     return resultado

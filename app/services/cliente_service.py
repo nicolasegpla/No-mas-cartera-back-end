@@ -62,7 +62,7 @@ def obtener_cliente_con_saldos(db: Session, cliente_id: int):
         print(f"id={f.id}, estado={f.estado}")
 
 
-    return cliente
+    return cliente, total_facturas, total_abonos, estado_cartera
     #return {
     #    "id": cliente.id,
     #    "empresa_id": cliente.empresa_id,
