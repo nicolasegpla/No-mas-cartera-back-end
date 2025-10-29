@@ -118,3 +118,13 @@ Pagos parciales o totales de una factura.\
      ```
      abonos  clientes  facturas  empresas  usuarios  alembic_version
      ```
+
+## 🧩 Descripción detallada (de ajustes de facturacion):
+
+- Se creó el nuevo endpoint para obtener el listado completo de facturas asociadas a una empresa.
+
+- Se implementó validación de permisos para asegurar que solo la empresa propietaria pueda acceder a sus facturas.
+
+- Se ajustó la lógica de creación de facturas eliminando el unique=True global en numero_factura, permitiendo números repetidos entre empresas.
+
+- Se añadió validación en la capa de servicio para garantizar unicidad de numero_factura dentro de cada empresa.
