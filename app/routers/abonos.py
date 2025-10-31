@@ -8,6 +8,7 @@ from app.core.deps import get_current_empresa
 from app.models.cliente import Cliente
 from app.models.empresa import Empresa
 from app.models.factura import Factura
+from app.models.abono import Abono
 
 router = APIRouter()
 
@@ -28,7 +29,15 @@ def create_abono(abono: AbonoCreate, db: Session = Depends(get_db), empresa: Emp
     return crear_abono(db, abono)
 
 @router.get("/{abono_id}", response_model=AbonoResponse)
-def read_abono(abono_id: int, db: Session = Depends(get_db)):
+def read_abono(abono_id: int, db: Session = Depends(get_db), empresa: Empresa = Depends(get_current_empresa)):
+    print("Obteniendo abono con ID:", abono_id)
+    abono_data = db.query(Abono).filter(Abono.id == abono_id).first()
+    if not abono_data:
+        raise HTTPException(status_code=404, detail="Abono no encontrado o no pertenece a la empresa actual.")
+    client_data = db.query(Cliente).filter(Cliente.id == abono_data.cliente_id).first()
+    if client_data.empresa_id != empresa.id:
+        raise HTTPException(status_code=404, detail="Abono no encontrado o no pertenece a la empresa actual ok.")
+    print("Abono encontrado:", abono_data.cliente_id)
     abono = obtener_abono(db, abono_id)
     if not abono:
         raise HTTPException(status_code=404, detail="Abono no encontrado")
