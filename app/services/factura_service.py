@@ -34,7 +34,7 @@ def crear_factura(db: Session, factura_data: FacturaCreate, empresa_id: int) -> 
     if cliente.empresa_id != empresa_id:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="El cliente no pertenece a la empresa actual."
+            detail="Cliente no encontado o no pertenece a la empresa actual."
         )
 
     factura = Factura(
