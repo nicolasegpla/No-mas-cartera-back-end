@@ -54,6 +54,9 @@ def obtener_factura(db: Session, factura_id: int) -> Factura:
 
 def obtener_factura_detalle(db: Session, factura_id: int):
     factura = db.query(Factura).filter(Factura.id == factura_id).first()
+    if not factura:
+        raise HTTPException(status_code=404, detail="Factura no encontrada")
+
     cliente = db.query(Cliente).filter(Cliente.id == factura.cliente_id).first()
     if not factura:
         return None
@@ -72,9 +75,11 @@ def obtener_factura_detalle(db: Session, factura_id: int):
     elif factura.fecha_vencimiento < datetime.now():
         estado = "vencida"
 
+
     return {
         "id": factura.id,
         "cliente_id": factura.cliente_id,
+        "cliente_nombre": cliente.nombre,
         "monto_total": factura.monto_total,
         "total_abonado": total_abonado,
         "saldo_pendiente": saldo_pendiente,
@@ -120,6 +125,7 @@ def obtener_facturas_por_cliente(db: Session, cliente_id: int, empresa: Empresa)
         resultado.append({
             "id": f.id,
             "cliente_id": f.cliente_id,
+            "nombre_cliente": cliente.nombre,
             "monto_total": f.monto_total,
             "total_abonado": total_abonado,
             "saldo_pendiente": saldo_pendiente,
@@ -150,6 +156,7 @@ def obtener_todas_las_facturas(db: Session, empresa: Empresa) -> List[dict]:
         resultado.append({
             "id": facturas.id,
             "cliente_id": facturas.cliente_id,
+            "nombre_cliente": facturas.cliente.nombre,
             "monto_total": facturas.monto_total,
             "estado": facturas.estado,
             "fecha_emision": facturas.fecha_emision,

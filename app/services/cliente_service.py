@@ -16,6 +16,18 @@ from app.models.empresa import Empresa
 #    return cliente
 
 def crear_cliente(db: Session, cliente_data: ClienteCreate, empresa: Empresa) -> Cliente:
+
+    cliente_numero_factura = (
+        db.query(Cliente)
+            .filter(
+                Cliente.empresa_id == empresa.id,
+                Cliente.identificacion_tributaria == cliente_data.identificacion_tributaria
+            )
+            .first()
+    )
+    if cliente_numero_factura:
+        raise HTTPException(status_code=400, detail="Ya existe un cliente con esa identificación tributaria")
+
     cliente = Cliente(
         **cliente_data.dict(),
         empresa_id=empresa.id  # 👈 Aquí se agrega automáticamente
@@ -62,19 +74,19 @@ def obtener_cliente_con_saldos(db: Session, cliente_id: int):
         print(f"id={f.id}, estado={f.estado}")
 
 
-    return cliente, total_facturas, total_abonos, estado_cartera
-    #return {
-    #    "id": cliente.id,
-    #    "empresa_id": cliente.empresa_id,
-    #    "nombre": cliente.nombre,
-    #    "email": cliente.email,
-    #    "telefono": cliente.telefono,
-    #    "identificacion_tributaria": cliente.identificacion_tributaria,
-    #    "deuda_total": total_facturas - total_abonos,
-    #    "abonado_total": total_abonos,
-    #    "estado_cartera": estado_cartera,
-    #    "fecha_registro": cliente.fecha_registro
-    #}
+    #return cliente, total_facturas, total_abonos, estado_cartera
+    return {
+        "id": cliente.id,
+        "empresa_id": cliente.empresa_id,
+        "nombre": cliente.nombre,
+        "email": cliente.email,
+        "telefono": cliente.telefono,
+        "identificacion_tributaria": cliente.identificacion_tributaria,
+        "deuda_total": total_facturas - total_abonos,
+        "abonado_total": total_abonos,
+        "estado_cartera": estado_cartera,
+        "fecha_registro": cliente.fecha_registro
+    }
 
 def obtener_clientes(db: Session, empresa_id: int) -> list[dict]:
     clientes = db.query(Cliente).filter(Cliente.empresa_id == empresa_id).all()

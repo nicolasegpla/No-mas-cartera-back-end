@@ -22,6 +22,7 @@ class FacturaResponse(BaseModel):
 class FacturaDetalleResponse(BaseModel):
     id: int
     cliente_id: int
+    cliente_nombre: str
     monto_total: float
     total_abonado: float
     saldo_pendiente: float
@@ -36,6 +37,7 @@ class FacturaDetalleResponse(BaseModel):
 class FacturaListadoResponse(BaseModel):
     id: int
     cliente_id: int
+    nombre_cliente: str
     monto_total: float
     total_abonado: float
     saldo_pendiente: float

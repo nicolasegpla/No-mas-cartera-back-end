@@ -20,15 +20,16 @@ def read_clientes_por_empresa(db: Session = Depends(get_db), empresa: Empresa = 
 @router.get("/{cliente_id}", response_model=ClienteResponse)
 def read_cliente(cliente_id: int, db: Session = Depends(get_db), empresa: Empresa = Depends(get_current_empresa)):
     cliente = obtener_cliente_con_saldos(db, cliente_id)
-    print("Cliente obtenido:", cliente)
+    info_cliente = db.query(Cliente).filter(Cliente.id == cliente_id).first()
+    print("Cliente obtenido:", info_cliente.empresa_id)
     if not cliente:
         raise HTTPException(status_code=404, detail="Cliente no encontrado")
     
     #Seguridad: evitar que una empresa acceda a clientes de otra empresa
-    if cliente.empresa_id != empresa.id:
+    if info_cliente.empresa_id != empresa.id:
         raise HTTPException(
             status_code=403,
-            detail="No tienes permisos para acceder a este cliente"
+            detail="Cliente no encontrado o no tienes permisos para acceder a este cliente"
         )
     return cliente
 
