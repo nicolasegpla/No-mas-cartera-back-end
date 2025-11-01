@@ -4,6 +4,7 @@ from app.schemas.abono import AbonoCreate
 from app.models.factura import Factura
 from fastapi import HTTPException
 from sqlalchemy import func
+from app.models.cliente import Cliente
 
 
 def crear_abono(db: Session, abono_data: AbonoCreate) -> Abono:
@@ -61,3 +62,30 @@ def obtener_abonos_por_factura(db: Session, factura_id: int) -> list[Abono]:
     db.commit()
 
     return resultado
+
+def obtener_todos_los_abonos(db: Session, empresa_id: int) -> list[Abono]:
+    abonos = (
+        db.query(Abono)
+        .join(Cliente, Cliente.id == Abono.cliente_id)
+        .filter(Cliente.empresa_id == empresa_id)
+        .all()
+    )
+
+    if not abonos:
+        raise HTTPException(status_code=404, detail="No se encontraron abonos para esta empresa")
+
+    resultado = []
+
+    for abono in abonos:
+        resultado.append({
+            "id": abono.id,
+            "cliente_id": abono.cliente_id,
+            "factura_id": abono.factura_id,
+            "monto_abono": abono.monto_abono,
+            "metodo_pago": abono.metodo_pago,
+            "fecha_abono": abono.fecha_abono,
+        })
+
+    return resultado
+
+
