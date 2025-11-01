@@ -88,4 +88,30 @@ def obtener_todos_los_abonos(db: Session, empresa_id: int) -> list[Abono]:
 
     return resultado
 
+def obtener_todos_los_abonos_por_cliente(db: Session, cliente_id: int, empresa_id: int) -> list[Abono]:
+    abonos = (
+        db.query(Abono)
+        .join(Cliente, Cliente.id == Abono.cliente_id)
+        .filter(Cliente.empresa_id == empresa_id)
+        .filter(Abono.cliente_id == cliente_id)
+        .all()
+    )
+
+    if not abonos:
+        raise HTTPException(status_code=404, detail="No se encontraron abonos para este cliente en esta empresa")
+
+    resultado = []
+
+    for abono in abonos:
+        resultado.append({
+            "id": abono.id,
+            "cliente_id": abono.cliente_id,
+            "factura_id": abono.factura_id,
+            "monto_abono": abono.monto_abono,
+            "metodo_pago": abono.metodo_pago,
+            "fecha_abono": abono.fecha_abono,
+        })
+
+    return resultado
+
 

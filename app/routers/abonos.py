@@ -10,6 +10,7 @@ from app.models.empresa import Empresa
 from app.models.factura import Factura
 from app.models.abono import Abono
 from app.services.abono_service import obtener_todos_los_abonos
+from app.services.abono_service import obtener_todos_los_abonos_por_cliente
 
 router = APIRouter()
 
@@ -58,3 +59,10 @@ def get_abonos_por_factura(factura_id: int, db: Session = Depends(get_db), empre
 @router.get("/todos/", response_model=list[AbonoResponse])
 def get_todos_los_abonos(db: Session = Depends(get_db), empresa: Empresa = Depends(get_current_empresa)):
     return obtener_todos_los_abonos(db, empresa.id)
+
+@router.get("/todos/cliente/{cliente_id}", response_model=list[AbonoResponse])
+def get_todos_los_abonos_por_cliente(cliente_id: int, db: Session = Depends(get_db), empresa: Empresa = Depends(get_current_empresa)):
+    client_data = db.query(Cliente).filter(Cliente.id == cliente_id).first()
+    if client_data.empresa_id != empresa.id:
+        raise HTTPException(status_code=404, detail="Cliente no encontrado o no pertenece a la empresa actual.")
+    return obtener_todos_los_abonos_por_cliente(db, cliente_id, empresa.id)
